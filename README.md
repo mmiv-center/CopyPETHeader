@@ -131,8 +131,29 @@ Adding this information into a sequence item we need to use the path notation fr
     DCMDICTPATH=$dd dcmodify -nb -i "(0054,0016)[0].(0054,0302)[0].(0008,0104)=Intravenous route" "$input"
 ```
 
-These steps are available as a shell script in cpyHeader.sh that checks its input arguments (input folder and output folder) and runs on all found DICOM files.
+There is one remaining issue. The tags in the 0009 group are private tags and therefore not in our default dcmtk data dictionary (dicom.dic). In order to get the correct value representation for all tags in the sequence these group-, tag pairs have been added to the standard dicom.dic as:
+
+```{txt}
+(0009,"MEDISO-1",10F0)	FD	PrivateCreator	1	PrivateTag
+(0009,"MEDISO-1",10FA)	ST	SomethingWITHUnits	1	PrivateTag
+(0009,"MEDISO-1",10F1)	FD	PrivateCreator	1	PrivateTag
+(0009,"MEDISO-1",10F2)	FD	PrivateCreator	1	PrivateTag
+(0009,"MEDISO-1",10F3)	FD	PrivateCreator	1	PrivateTag
+(0009,"MEDISO-1",10EE)	DT	PrivateCreator	1	PrivateTag
+(0009,"MEDISO-1",10EF)	DT	PrivateCreator	1	PrivateTag
+(0009,"MEDISO-1",10FB)	US	PrivateCreator	1	PrivateTag
+(0018,"MEDISO-1",1071)	DS	PrivateCreator	1	PrivateTag
+(0018,"MEDISO-1",1074)	DS	PrivateCreator	1	PrivateTag
+(0018,"MEDISO-1",1075)	DS	PrivateCreator	1	PrivateTag
+(0018,"MEDISO-1",1076)	DS	PrivateCreator	1	PrivateTag
+(0018,"MEDISO-1",1078)	DS	PrivateCreator	1	PrivateTag
+```
+
+Notice that each field is separated by a tab-character from the next.
+
+
+The above steps of creating a sequence are available as a shell script cpyHeader.sh that also checks its input arguments (input folder and output folder) and runs on all found DICOM files.
 
 ### Notes
 
-TODO: The cpyHeader.sh script does not do the whole job currently. It is reading the dose information but not using that information when it writes the sequence. The resulting DICOM files have also not been tried yet with the analysis software.
+TODO: The cpyHeader.sh script does not do the whole job currently. It is reading the dose information but not using that information when it writes the sequence. The resulting DICOM files have also not been tried yet with the analysis software. The individual dcmodify calls can be combined in fewer calls by repeatedly using the '-i' option. The limit there is just the maximum length of a command line, which includes the path to the DICOM files.
